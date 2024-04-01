@@ -5,21 +5,25 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.Menu
 import android.view.MenuItem
+import androidx.appcompat.app.ActionBarDrawerToggle // 追加
+import androidx.core.view.GravityCompat // 追加
+import com.google.android.material.navigation.NavigationView // 追加
 import com.google.firebase.auth.FirebaseAuth
 import jp.techacademy.youichi.okami.qa_app.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
     private lateinit var binding: ActivityMainBinding
+
+    private var genre = 0  // 追加
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.content.toolbar)
 
-        binding.fab.setOnClickListener {
+        binding.content.fab.setOnClickListener {
             // ログイン済みのユーザーを取得する
             val user = FirebaseAuth.getInstance().currentUser
 
@@ -29,6 +33,21 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
+
+        // ----- 追加:ここから
+        // ナビゲーションドロワーの設定
+        val toggle = ActionBarDrawerToggle(
+            this,
+            binding.drawerLayout,
+            binding.content.toolbar,
+            R.string.app_name,
+            R.string.app_name
+        )
+        binding.drawerLayout.addDrawerListener(toggle)
+        toggle.syncState()
+
+        binding.navView.setNavigationItemSelectedListener(this)
+        // ----- 追加:ここまで
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -46,4 +65,30 @@ class MainActivity : AppCompatActivity() {
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    // ----- 追加:ここから
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_hobby -> {
+                binding.content.toolbar.title = getString(R.string.menu_hobby_label)
+                genre = 1
+            }
+            R.id.nav_life -> {
+                binding.content.toolbar.title = getString(R.string.menu_life_label)
+                genre = 2
+            }
+            R.id.nav_health -> {
+                binding.content.toolbar.title = getString(R.string.menu_health_label)
+                genre = 3
+            }
+            R.id.nav_computer -> {
+                binding.content.toolbar.title = getString(R.string.menu_computer_label)
+                genre = 4
+            }
+        }
+
+        binding.drawerLayout.closeDrawer(GravityCompat.START)
+        return true
+    }
+    // ----- 追加:ここまで
 }
