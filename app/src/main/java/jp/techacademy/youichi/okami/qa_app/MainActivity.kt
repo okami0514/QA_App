@@ -150,6 +150,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         questionArrayList = ArrayList()
         adapter.notifyDataSetChanged()
         // ----- 追加:ここまで -----
+
+        // ----- 追加:ここから -----
+        binding.content.inner.listView.setOnItemClickListener { _, _, position, _ ->
+            // Questionのインスタンスを渡して質問詳細画面を起動する
+            val intent = Intent(applicationContext, QuestionDetailActivity::class.java)
+            intent.putExtra("question", questionArrayList[position])
+            startActivity(intent)
+        }
+        // ----- 追加:ここまで -----
+
     }
 
     override fun onResume() {
